@@ -1,0 +1,10 @@
+<changeSet id="skip-application-default-roles-table" author="sri">
+  <sql>
+    SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'APPLICATION_DEFAULT_ROLES' AND TABLE_SCHEMA = 'keycloak';
+  </sql>
+  <if condition="liquibase.sql.count() == 1">
+    <sql>
+      ALTER TABLE keycloak.APPLICATION_DEFAULT_ROLES COMMENT 'This table is already created and managed by Keycloak.';
+    </sql>
+  </if>
+</changeSet>
