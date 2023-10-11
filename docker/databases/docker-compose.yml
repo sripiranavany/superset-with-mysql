@@ -12,11 +12,58 @@ services:
       MYSQL_PASSWORD: password
     volumes:
       - ./backup/reporting.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backup/my.cnf:/etc/my.cnf
     ports:
       - "3308:3306"
     networks:
-      - superset_network
+      - data_base_network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_kite
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27020:27017"
+    volumes:
+      - ./backup/kite:/kite/db
+    networks:
+      - data_base_network
+
+  # spark-master:
+  #   image: bitnami/spark:3.5.0
+  #   container_name: spark_master
+  #   environment:
+  #     - SPARK_MODE=master
+  #     - SPARK_AUTH_ENABLED=true
+  #     - SPARK_AUTH_USER=user
+  #     - SPARK_AUTH_PASSWORD=password
+  #   ports:
+  #     - "7077:7077"
+  #     - "8080:8080"
+  #   networks:
+  #     - data_base_network
+
+  # spark-worker:
+  #   image: bitnami/spark:3.5.0
+  #   container_name: spark_worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #     - SPARK_AUTH_ENABLED=true
+  #     - SPARK_AUTH_USER=user
+  #     - SPARK_AUTH_PASSWORD=password
+  #   depends_on:
+  #     - spark-master
+  #   networks:
+  #     - data_base_network
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 10g
+  #         cpus: "4"
 
 networks:
-  superset_network:
+  data_base_network:
     external: true
